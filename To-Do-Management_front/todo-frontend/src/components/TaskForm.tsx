@@ -1,6 +1,7 @@
 import type {CreateTaskRequest, TodoTask, UpdateTaskRequest} from "../types";
 import { useEffect, useState} from "react";
 import {useAuth} from "../context/AuthContext.tsx";
+import {InputText} from "primereact/inputtext";
 
 
 interface TaskFormProps{
@@ -80,37 +81,16 @@ export const TaskForm = ({onSave, editingTask, onCancel}: TaskFormProps) => {
                     width: "100%",
                 }}
             >
-                <input
-                    type="text"
-                    placeholder="Title"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
-                    required
-                    style={{
-                        padding: "10px",
-                        borderRadius: "6px",
-                        border: "1px solid #ddd",
-                        minWidth: "120px",
-                        textAlign: "center",
-                        transition: "0.2s",
-                    }}
-                />
-                <input
-                    placeholder="Description"
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                    required
-                    style={{
-                        padding: "10px",
-                        borderRadius: "6px",
-                        border: "1px solid #ddd",
-                        minWidth: "200px",
-                        minHeight: "60px",
-                        textAlign: "center",
-                        transition: "0.2s",
-                        resize: "vertical",
-                    }}
-                />
+                <div className="card flex justify-content-center">
+                    <InputText type="text" placeholder="Title" value={title}
+                               onChange={e => setTitle(e.target.value)}
+                               required />
+                </div>
+                <div className="card flex justify-content-center">
+                    <InputText type="text" placeholder="Description" value={description}
+                               onChange={e => setDescription(e.target.value)}
+                               required />
+                </div>
                 <select
                     value={status}
                     onChange={e => setStatus(e.target.value as any)}

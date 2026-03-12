@@ -1,71 +1,36 @@
 
 import type { TodoTask } from "../types";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Button } from "primereact/button";
 
-interface TaskCardProps {
-    task: TodoTask;
-    onEdit?: () => void;
-    onDelete?: () => void;
+interface TasksTableProps {
+    tasks: TodoTask[];
+    onEdit?: (task: TodoTask) => void;
+    onDelete?: (task: TodoTask) => void;
 }
 
-export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => (
-    <div
-        style={{
-            border: "1px solid #ccc",
-            borderRadius: "10px",
-            padding: "16px",
-            backgroundColor: "#fff",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-        }}
-    >
-        <div>
-            <h3 style={{ margin: "0 0 8px 0" }}>{task.title}</h3>
-            <p style={{ margin: "0 0 8px 0", color: "#555" }}>{task.description}</p>
-            <p style={{ margin: "0 0 4px 0", fontSize: "0.9rem", color: "#333" }}>
-                Status: <strong>{task.status}</strong> | Priority: <strong>{task.priority}</strong>
-            </p>
-            {task.dueDate && (
-                <p style={{ margin: "0", fontSize: "0.85rem", color: "#777" }}>
-                    Due: {new Date(task.dueDate).toLocaleDateString()}
-                </p>
-            )}
-        </div>
+export const TasksTable = ({ tasks, onEdit, onDelete }: TasksTableProps) => {
 
-        <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+    const actionBodyTemplate = (rowData: TodoTask) => (
+        <div style={{ display: "flex", gap: "0.5rem" }}>
             {onEdit && (
-                <button
-                    onClick={onEdit}
-                    style={{
-                        flex: 1,
-                        padding: "6px 10px",
-                        borderRadius: "6px",
-                        border: "none",
-                        backgroundColor: "#4CAF50",
-                        color: "#fff",
-                        cursor: "pointer",
-                    }}
-                >
-                    Edit
-                </button>
+                <Button icon="pi pi-pencil" className="p-button-sm p-button-success" onClick={() => onEdit(rowData)} />
             )}
             {onDelete && (
-                <button
-                    onClick={onDelete}
-                    style={{
-                        flex: 1,
-                        padding: "6px 10px",
-                        borderRadius: "6px",
-                        border: "none",
-                        backgroundColor: "#f44336",
-                        color: "#fff",
-                        cursor: "pointer",
-                    }}
-                >
-                    Delete
-                </button>
+                <Button icon="pi pi-trash" className="p-button-sm p-button-danger" onClick={() => onDelete(rowData)} />
             )}
         </div>
-    </div>
-);
+    );
+
+    return (
+        <DataTable value={tasks} responsiveLayout="scroll" paginator rows={10}>
+            <Column field="title" header="Title" sortable></Column>
+            <Column field="description" header="Description"></Column>
+            <Column field="status" header="Status" sortable></Column>
+            <Column field="priority" header="Priority" sortable></Column>
+            <Column field="dueDate" header="Due Date" body={(row) => row.dueDate ? new Date(row.dueDate).toLocaleDateString() : '-'} sortable></Column>
+            <Column header="Actions" body={actionBodyTemplate}></Column>
+        </DataTable>
+    );
+};

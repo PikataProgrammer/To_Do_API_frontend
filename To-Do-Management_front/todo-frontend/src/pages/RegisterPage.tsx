@@ -1,57 +1,87 @@
-import {useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
-import type {RegisterRequest} from "../types";
-import {registerUser} from "../api/todoApi.ts";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import type { RegisterRequest } from "../types";
+import { registerUser } from "../api/todoApi.ts";
 import logoImage from "../assets/logo.png";
 
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { Button } from "primereact/button";
+import { Card } from "primereact/card";
+import { Message } from "primereact/message";
 
 const RegisterPage = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
-    const [isHovered, setHovered] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        setError('');
+        setError("");
 
         try {
-            const data: RegisterRequest = {name, email, password};
+            const data: RegisterRequest = { name, email, password };
             const response = await registerUser(data);
             alert(response.message);
-
             navigate("/login");
-        }
-        catch (error: any) {
-            setError(error.response?.data?.message || "Registration failed.");
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Registration failed.");
         }
     };
+
     return (
-        <div style={{ maxWidth: 400, margin: "50px auto" }}>
-            <h1 style={{letterSpacing: "34px", alignItems: "center", textAlign: "center", margin: "0px 100px 40px 0px" }}>REGISTER</h1>
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                <input style={{borderRadius: "5px", padding: "5px 5px"}} type="text" placeholder="Name" value={name}
-                       onChange={(e) => setName(e.target.value)} required />
-                <input style={{borderRadius: "5px", padding: "5px 5px"}} type="text" placeholder="Email" value={email}
-                       onChange={(e) => setEmail(e.target.value)} required />
-                <input style={{borderRadius: "5px", padding: "5px 5px"}} type="password" placeholder="Password" value={password}
-                       onChange={(e) => setPassword(e.target.value)} required />
-                <button type="submit" onMouseEnter={() => setHovered(true)}
-                        onMouseLeave={() => setHovered(false)} style={{color: "black", textDecoration: "none", borderRadius:
-                        "10px", padding: "10px 10px", cursor: "pointer", border: "1px solid black", backgroundColor: isHovered ? "#b5ffb8" : "#e80712"}}>Register</button>
-            </form>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}>
+            <Card title="Register" style={{ width: "400px", textAlign: "center" }}>
+                <form
+                    onSubmit={handleSubmit}
+                    style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%" }}
+                >
+                    <InputText
+                        type="text"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="p-inputtext-lg w-full"
+                    />
+                    <InputText
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="p-inputtext-lg w-full"
+                    />
+                    <Password
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        toggleMask
+                        feedback={false}
+                        required
+                        className="p-inputtext-lg w-full"
+                        style={{ width: "100%" }}
+                    />
 
-            {error && <p style={{color: "red"}}>{error}</p>}
+                    <Button type="submit" label="Register" className="p-button-lg p-button-rounded p-button-success" />
 
-            <p>
-                Already have an account? <Link to="/login" style={{textDecoration: "underline"}}>Login</Link>
-            </p>
-            <img src={logoImage} alt="Logo" style={{objectFit: "cover", maxWidth: "100%"}} />
+                    {error && <Message severity="error" text={error} />}
+                </form>
+
+                <p style={{ marginTop: "20px" }}>
+                    Already have an account? <Link to="/login" style={{ textDecoration: "underline" }}>Login</Link>
+                </p>
+
+                <img
+                    src={logoImage}
+                    alt="Logo"
+                    style={{ objectFit: "cover", maxWidth: "100%", marginTop: "20px" }}
+                />
+            </Card>
         </div>
-    )
-}
+    );
+};
 
 export default RegisterPage;

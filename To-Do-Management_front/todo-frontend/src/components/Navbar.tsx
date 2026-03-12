@@ -1,60 +1,39 @@
-import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../context/AuthContext.tsx";
-import {useState} from "react";
 
+import { Menubar } from "primereact/menubar";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.tsx";
+
+import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [isHoveredLogin, setIsHoveredLogin] = useState(false);
-    const [isHoveredRegister, setIsHoveredRegister] = useState(false);
-    const [isHoveredLogout, setIsHoveredLogout] = useState(false);
 
     const handleLogout = () => {
         logout();
         navigate("/login");
     };
 
+    const items = [
+        { label: "Home", icon: "pi pi-fw pi-home", command: () => navigate("/") },
+        {
+            label: "Tasks",
+            icon: "pi pi-fw pi-check-square",
+            items: [
+                { label: "Create Task", icon: "pi pi-plus", command: () => navigate("/tasks/create") },
+                { label: "View Tasks", icon: "pi pi-list", command: () => navigate("/tasks") }
+            ]
+        },
+        user
+            ? { label: `Hello, ${user.name}!`, icon: "pi pi-user", items: [{ label: "Logout", icon: "pi pi-sign-out", command: handleLogout }] }
+            : { label: "Account", icon: "pi pi-user", items: [{ label: "Login", icon: "pi pi-sign-in",
+                    command: () => navigate("/login") }, { label: "Register", icon: "pi pi-user-plus",
+                    command: () => navigate("/register") }] }
+    ];
 
-    return (
-        <nav style={{display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 20px", backgroundColor: "#a1ffe9"
-        }}>
-            <div>
-                <Link to="/" style={{  color: "black", textDecoration: "none", fontWeight: "bold"}}>TaskManager</Link>
-            </div>
-
-            <div style={{ display: "flex", gap: "15px", alignItems: "center"}}>
-                {user ? (
-                    <>
-            <span style={{ marginRight: "10px"}}>
-              Hello, {user.name}!
-            </span>
-                        <button onClick={handleLogout} onMouseEnter={() => setIsHoveredLogout(true)}
-                                onMouseLeave={() => setIsHoveredLogout(false)}
-                                style={{color: "black", borderRadius: "10px", padding: "5px 10px", cursor: "pointer",
-                                    backgroundColor: isHoveredLogout ? "#c90227" : "#fa0230"}}>
-                            Logout
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/login" onMouseEnter={() => setIsHoveredLogin(true)}
-                              onMouseLeave={() => setIsHoveredLogin(false)} style={{color: "black", textDecoration: "none", borderRadius:
-                                "10px", padding: "5px 10px", cursor: "pointer", border: "1px solid black", backgroundColor: isHoveredLogin ? "#b5ffb8" : "#e80712"}}>Login
-                        </Link>
-
-                        <Link to="/register" onMouseEnter={() => setIsHoveredRegister(true)}
-                              onMouseLeave={() => setIsHoveredRegister(false)} style={{color: "black", textDecoration: "none", borderRadius:
-                                "10px", padding: "5px 10px", cursor: "pointer", border: "1px solid black", backgroundColor: isHoveredRegister ? "#b5ffb8" : "#e80712"}}>
-                            Register
-                        </Link>
-                    </>
-                )}
-            </div>
-        </nav>
-    )
-
-}
+    return <Menubar model={items} />;
+};
 
 export default Navbar;
-
