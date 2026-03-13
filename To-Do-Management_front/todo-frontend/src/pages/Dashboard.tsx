@@ -1,18 +1,20 @@
 // src/pages/Dashboard.tsx
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import type { CreateTaskRequest, TodoTask, UpdateTaskRequest } from "../types";
 import { createTask, deleteTask, getTasks, updateTask } from "../api/todoApi";
 import { TaskForm } from "../components/TaskForm";
-import { TasksTable } from "../components/TaskCard"; // TasksTable вече е PrimeReact DataTable
+import { TasksTable } from "../components/TaskCard";
+import { Toast } from 'primereact/toast';
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState<TodoTask[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingTask, setEditingTask] = useState<TodoTask | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 12;
+    const toast = useRef<Toast>(null);
+
 
     const fetchTasks = async (pageNumber: number) => {
         setLoading(true);
@@ -35,9 +37,10 @@ const Dashboard = () => {
         try {
             await deleteTask(id);
             fetchTasks(page);
+            toast.current?.show({ severity: 'success', summary: 'Deleted', detail: 'Task deleted successfully', life: 2000 });
         } catch (err) {
             console.error(err);
-            setErrorMessage("Failed to delete task.");
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete task.', life: 3000 });
         }
     };
 
@@ -47,21 +50,23 @@ const Dashboard = () => {
                 const updated = await updateTask(editingTask.id, taskData as UpdateTaskRequest);
                 setTasks(prev => prev.map(t => t.id === updated.id ? updated : t));
                 setEditingTask(null);
+                toast.current?.show({ severity: 'success', summary: 'Updated', detail: 'Task updated successfully', life: 3000 });
             } else {
                 await createTask(taskData as CreateTaskRequest);
                 fetchTasks(page);
+                toast.current?.show({ severity: 'success', summary: 'Created', detail: 'Task created successfully', life: 3000 });
             }
         } catch (err: any) {
             if (err.response?.status === 409) {
-                setErrorMessage("Task with this title already exists!");
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Task with this title already exists!', life: 3000 });
             } else if (err.response?.status === 400 && Array.isArray(err.response.data)) {
                 const messages = err.response.data.map(
                     (e: { propertyName: string; errorMessage: string }) =>
                         `${e.propertyName}: ${e.errorMessage}`
-                );
-                setErrorMessage(messages.join("\n"));
+                ).join("\n");
+                toast.current?.show({ severity: 'error', summary: 'Validation Error', detail: messages, life: 3000 });
             } else {
-                setErrorMessage("Something went wrong.");
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Something went wrong.', life: 3000 });
             }
         }
     };
@@ -70,6 +75,8 @@ const Dashboard = () => {
 
     return (
         <div style={{ padding: "20px" }}>
+            <Toast ref={toast} />
+
             <h1 style={{ textAlign: "center" }}>Dashboard</h1>
 
             <TaskForm
@@ -83,38 +90,6 @@ const Dashboard = () => {
                 onEdit={(task) => setEditingTask(task)}
                 onDelete={(task) => handleDelete(task.id)}
             />
-
-
-            {errorMessage && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        background: "rgba(0,0,0,0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            background: "white",
-                            padding: "20px",
-                            borderRadius: "8px",
-                            minWidth: "300px",
-                            textAlign: "center",
-                        }}
-                    >
-                        <p style={{ color: "red", whiteSpace: "pre-line" }}>{errorMessage}</p>
-                        <div style={{ marginTop: "15px" }}>
-                            <button onClick={() => setErrorMessage(null)}>OK</button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

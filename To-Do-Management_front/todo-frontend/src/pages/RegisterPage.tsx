@@ -55,6 +55,7 @@ const RegisterPage = () => {
                         className="p-inputtext-lg w-full"
                     />
                     <Password
+                        type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
