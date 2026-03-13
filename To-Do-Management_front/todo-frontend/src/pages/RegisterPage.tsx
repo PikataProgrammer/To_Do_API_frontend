@@ -62,7 +62,7 @@ const RegisterPage = () => {
                         toggleMask
                         feedback={false}
                         required
-                        className="p-inputtext-lg w-full"
+                        className="p-inputtext-lg w-full p-fluid"
                         style={{ width: "100%" }}
                     />
 

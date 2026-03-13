@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import { loginUser } from "../api/todoApi";
 import { useAuth } from "../context/AuthContext";
 import type { LoginRequest } from "../types";
@@ -9,8 +9,12 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Message } from "primereact/message";
+import {useToast} from "../context/ToastContext.tsx";
 
 const LoginPage = () => {
+
+    const { show } = useToast();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -26,6 +30,13 @@ const LoginPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        try {
+            const credentianals: LoginRequest = {email, password};
+            await loginUser(credentianals);
+            show({ severity: 'success', summary: 'Welcome!', detail: 'You are logged in' });
+        } catch {
+            show({ severity: 'error', summary: 'Login failed', detail: 'Invalid credentials' });
+        }
 
         try {
             const credentials: LoginRequest = { email, password };
@@ -66,6 +77,13 @@ const LoginPage = () => {
                         type="submit"
                         label="Login"
                         className="p-button-lg p-button-rounded"
+                    />
+
+                    <Button
+                        type="submit"
+                        label="Register"
+                        className="p-button-lg p-button-rounded"
+                        onClick={() => navigate("/register")}
                     />
 
                     {error && <Message severity="error" text={error} />}

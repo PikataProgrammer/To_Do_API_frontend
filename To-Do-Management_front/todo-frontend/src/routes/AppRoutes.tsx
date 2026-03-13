@@ -3,14 +3,13 @@ import LoginPage from "../pages/LoginPage";
 import Dashboard from "../pages/Dashboard";
 import {AuthContextProvider} from "../context/AuthContext";
 import RegisterPage from "../pages/RegisterPage.tsx";
-import Navbar from "../components/Navbar.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
+import Navbar from "../components/Navbar.tsx";
 
 export const AppRoutes = () => {
 
     return (
         <AuthContextProvider>
-            <Navbar />
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -19,7 +18,10 @@ export const AppRoutes = () => {
                     path="/"
                     element={
                         <ProtectedRoute>
-                            <Dashboard />
+                            <>
+                                <Navbar />
+                                <Dashboard />
+                            </>
                         </ProtectedRoute>
                     }
                 />
