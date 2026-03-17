@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import type { CreateTaskRequest, TodoTask, UpdateTaskRequest } from "../types";
 import { createTask, deleteTask, getTasks, updateTask } from "../api/todoApi";
 import { TaskForm } from "../components/TaskForm";
-import { TasksTable } from "../components/TaskCard";
+import { TasksTable } from "../components/TaskCard.tsx";
 import {ConfirmDialog, confirmDialog} from "primereact/confirmdialog";
 import {useToast} from "../context/ToastContext.tsx";
 
@@ -11,7 +11,6 @@ const Dashboard = () => {
     const {show} = useToast();
 
     const [tasks, setTasks] = useState<TodoTask[]>([]);
-    const [loading, setLoading] = useState(true);
     const [editingTask, setEditingTask] = useState<TodoTask | null>(null);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -19,15 +18,12 @@ const Dashboard = () => {
 
 
     const fetchTasks = async (pageNumber: number) => {
-        setLoading(true);
         try {
             const res = await getTasks(pageNumber, pageSize);
             setTasks(res.data);
             setTotalCount(res.totalCount);
         } catch (err) {
             console.error(err);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -74,7 +70,7 @@ const Dashboard = () => {
                 show({ severity: 'error', summary: 'Error', detail: 'Task with this title already exists!', life: 3000 });
             } else if (err.response?.status === 400 && Array.isArray(err.response.data)) {
                 const messages = err.response.data.map(
-                    (e: { propertyName: string; errorMessage: string }) =>
+                    (e: { propertyName: string, errorMessage: string }) =>
                         `${e.propertyName}: ${e.errorMessage}`
                 ).join("\n");
                 show({ severity: 'error', summary: 'Validation Error', detail: messages, life: 3000 });

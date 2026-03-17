@@ -9,8 +9,11 @@ import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Message } from "primereact/message";
+import {useToast} from "../context/ToastContext.tsx";
 
 const RegisterPage = () => {
+    const { show } = useToast();
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -23,11 +26,11 @@ const RegisterPage = () => {
 
         try {
             const data: RegisterRequest = { name, email, password };
-            const response = await registerUser(data);
-            alert(response.message);
+            await registerUser(data);
+            show({ severity: 'success', summary: 'Registered!', detail: 'You are registered successfully!' });
             navigate("/login");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Registration failed.");
+            show({ severity: 'error', summary: 'Registration failed', detail: 'Invalid credentials' });
         }
     };
 

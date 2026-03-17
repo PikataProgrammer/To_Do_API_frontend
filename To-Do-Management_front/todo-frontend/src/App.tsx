@@ -7,7 +7,7 @@ import {ToastProvider} from "./context/ToastContext.tsx";
 function App() {
     return (
         <ToastProvider>
-            <AppRoutes />;
+            <AppRoutes />
         </ToastProvider>
     )
 }
