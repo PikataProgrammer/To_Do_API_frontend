@@ -8,13 +8,13 @@ import {ConfirmDialog, confirmDialog} from "primereact/confirmdialog";
 import {useToast} from "../context/ToastContext.tsx";
 
 const Dashboard = () => {
-    const {show} = useToast();
+    const {showToast} = useToast();
 
     const [tasks, setTasks] = useState<TodoTask[]>([]);
     const [editingTask, setEditingTask] = useState<TodoTask | null>(null);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const pageSize = 10;
+    const pageSize = 2;
 
 
     const fetchTasks = async (pageNumber: number) => {
@@ -41,14 +41,14 @@ const Dashboard = () => {
                 try {
                     await deleteTask(id);
                     fetchTasks(page);
-                    show({ severity: 'success', summary: 'Deleted', detail: 'Task deleted successfully', life: 3000 });
+                    showToast({ severity: 'success', summary: 'Deleted', detail: 'Task deleted successfully', life: 3000 });
                 } catch (err) {
                     console.error(err);
-                    show({ severity: 'error', summary: 'Error', detail: 'Failed to delete task.', life: 3000 });
+                    showToast({ severity: 'error', summary: 'Error', detail: 'Failed to delete task.', life: 3000 });
                 }
             },
             reject: () => {
-                show({ severity: 'info', summary: 'Cancelled', detail: 'Delete cancelled', life: 3000 });
+                showToast({ severity: 'info', summary: 'Cancelled', detail: 'Delete cancelled', life: 3000 });
             }
         });
     };
@@ -59,23 +59,23 @@ const Dashboard = () => {
                 const updated = await updateTask(editingTask.id, taskData as UpdateTaskRequest);
                 setTasks(prev => prev.map(t => t.id === updated.id ? updated : t));
                 setEditingTask(null);
-                show({ severity: 'success', summary: 'Updated', detail: 'Task updated successfully', life: 3000 });
+                showToast({ severity: 'success', summary: 'Updated', detail: 'Task updated successfully', life: 3000 });
             } else {
                 await createTask(taskData as CreateTaskRequest);
                 fetchTasks(page);
-                show({ severity: 'success', summary: 'Created', detail: 'Task created successfully', life: 3000 });
+                showToast({ severity: 'success', summary: 'Created', detail: 'Task created successfully', life: 3000 });
             }
         } catch (err: any) {
             if (err.response?.status === 409) {
-                show({ severity: 'error', summary: 'Error', detail: 'Task with this title already exists!', life: 3000 });
+                showToast({ severity: 'error', summary: 'Error', detail: 'Task with this title already exists!', life: 3000 });
             } else if (err.response?.status === 400 && Array.isArray(err.response.data)) {
                 const messages = err.response.data.map(
                     (e: { propertyName: string, errorMessage: string }) =>
                         `${e.propertyName}: ${e.errorMessage}`
                 ).join("\n");
-                show({ severity: 'error', summary: 'Validation Error', detail: messages, life: 3000 });
+                showToast({ severity: 'error', summary: 'Validation Error', detail: messages, life: 3000 });
             } else {
-                show({ severity: 'error', summary: 'Error', detail: 'Something went wrong.', life: 3000 });
+                showToast({ severity: 'error', summary: 'Error', detail: 'Something went wrong.', life: 3000 });
             }
         }
     };

@@ -3,7 +3,7 @@ import { createContext, useContext, useRef, type ReactNode } from "react";
 import { Toast } from "primereact/toast";
 
 type ToastContextType = {
-    show: (options: {
+    showToast: (options: {
         severity: "success" | "info" | "error";
         summary: string;
         detail: string;

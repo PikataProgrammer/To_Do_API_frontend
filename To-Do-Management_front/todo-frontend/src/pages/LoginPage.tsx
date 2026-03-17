@@ -13,7 +13,7 @@ import {useToast} from "../context/ToastContext.tsx";
 
 const LoginPage = () => {
 
-    const { show } = useToast();
+    const { showToast } = useToast();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -33,9 +33,9 @@ const LoginPage = () => {
         try {
             const credentianals: LoginRequest = {email, password};
             await loginUser(credentianals);
-            show({ severity: 'success', summary: 'Welcome!', detail: 'You are logged in' });
+            showToast({ severity: 'success', summary: 'Welcome!', detail: 'You are logged in' });
         } catch {
-            show({ severity: 'error', summary: 'Login failed', detail: 'Invalid credentials' });
+            showToast({ severity: 'error', summary: 'Login failed', detail: 'Invalid credentials' });
         }
 
         try {

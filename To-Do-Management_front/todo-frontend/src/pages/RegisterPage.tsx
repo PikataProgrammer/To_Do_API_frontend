@@ -12,7 +12,7 @@ import { Message } from "primereact/message";
 import {useToast} from "../context/ToastContext.tsx";
 
 const RegisterPage = () => {
-    const { show } = useToast();
+    const { showToast } = useToast();
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -27,10 +27,10 @@ const RegisterPage = () => {
         try {
             const data: RegisterRequest = { name, email, password };
             await registerUser(data);
-            show({ severity: 'success', summary: 'Registered!', detail: 'You are registered successfully!' });
+            showToast({ severity: 'success', summary: 'Registered!', detail: 'You are registered successfully!' });
             navigate("/login");
         } catch (err: any) {
-            show({ severity: 'error', summary: 'Registration failed', detail: 'Invalid credentials' });
+            showToast({ severity: 'error', summary: 'Registration failed', detail: 'Invalid credentials' });
         }
     };
 
